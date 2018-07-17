@@ -60,7 +60,7 @@ ggchild.year <- great_grandchild %>%
 df  <- tibble(yob = c(2003:2018), counts = rep(1, 16))
 df2 <- tibble(yob = c(2003:2018), counts = c(rep (1, 11), rep(3, 5)))
 df3 <- tibble(yob = c(2003:2018), counts = c(rep (1, 11), rep(5, 4), 1))
-
+df4 <- tibble(yob = c(2003:2018), counts = c(rep (1, 14), 6, 1))
 
 # ---------------------------------
 # Waffle Chart
@@ -83,7 +83,7 @@ boy.plot <- waffle(myData.boy,
                               "#b4a897", "#a7cc42"),
                    size = 0.01,
                    use_glyph = "male",
-                   glyph_size = 9,
+                   glyph_size = 8,
                    title = "Boys = 28")
 
 
@@ -93,7 +93,7 @@ girl.plot <- waffle(myData.girl,
                     colors = c("#09abbd", "#f89c27", "#e23b69", "#a7cc42", "#b4a897", "#fed823"),
                     size = 0.01,
                     use_glyph = "female", 
-                    glyph_size = 9,
+                    glyph_size = 8,
                     title = "Girls = 26")
 
 
@@ -104,7 +104,6 @@ girl.plot <- waffle(myData.girl,
 child.yr <- ggchild.year %>% 
   ggplot() +
   geom_bar(color = "black", stat = "identity", aes(yob, n, fill = family)) +
-  ggtitle("GGChild") +
   geom_crossbar(data = df,  
                 aes(x = yob, y = counts, ymin = counts - 1, ymax = counts), 
                 fatten = 1) +
@@ -112,6 +111,9 @@ child.yr <- ggchild.year %>%
                 aes(x = yob, y = counts, ymin = counts - 1, ymax = counts), 
                 fatten = 1) +
   geom_crossbar(data = df3, 
+                aes(x = yob, y = counts, ymin = counts - 1, ymax = counts), 
+                fatten = 1) +
+  geom_crossbar(data = df4, 
                 aes(x = yob, y = counts, ymin = counts - 1, ymax = counts), 
                 fatten = 1) +
   ggtitle("") +
@@ -134,7 +136,15 @@ child.yr <- ggchild.year %>%
 # Table
 # ---------------------------------
 
-family.table <- tableGrob(ggchild %>% rename(Count = value, Family = family),
+ggchild.table <- great_grandchild %>% 
+  count(root, gender) %>% 
+  spread(gender, n, fill = 0) %>% 
+  rename(Family = root, Boys = male, Girls = female) %>% 
+  mutate(Sum = rowSums(select(., -Family))) %>% 
+  arrange(desc(Sum)) %>% 
+  select(Family, Boys, Girls, Sum)
+
+family.table <- tableGrob(ggchild.table,
                           rows = NULL,
                           theme = ttheme_minimal())
 
@@ -145,7 +155,7 @@ family.table <- gtable_add_grob(family.table,
                                   x1 = unit(1,"npc"),
                                   y1 = unit(0,"npc"),
                                   gp = gpar(lwd = 2.0)),
-                                t = 1, b = 1, l = 1, r = 2
+                                t = 1, b = 1, l = 1, r = 4
 )
 
 
@@ -153,13 +163,13 @@ family.table <- gtable_add_grob(family.table,
 # Combine All
 # ---------------------------------
 
-chart.layout <- rbind(c(1, 2), c(1, 3), c(4,5))
+chart.layout <- rbind(c(1, 1, 2), c(3, 4, 5))
 
-chart.title <- textGrob("Tok Che's Great-Grandchilren\n(Mini) Infographic", 
+chart.title <- textGrob("Tok Che's Great-Grandchildren\nMini Infographic", 
                    gp = gpar(fontsize = 23, fontface = "bold"), 
                    hjust = 0.5)
 
-grid.arrange(family.plot, boy.plot, girl.plot, child.yr, family.table, 
+grid.arrange(family.plot, child.yr, boy.plot, girl.plot, family.table, 
              layout_matrix = chart.layout, top = chart.title)
 
 
