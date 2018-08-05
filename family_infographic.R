@@ -7,7 +7,8 @@ library(grid)
 library(gtable)
 
 # Load the data
-great_grandchild <- read_csv("../data/great_grandchild.csv")
+great_grandchild <- read_csv("data/great_grandchild.csv",
+                             col_types = cols(dob = col_date("%d/%m/%Y")))
 
 # View the data
 great_grandchild
