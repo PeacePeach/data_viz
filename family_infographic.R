@@ -67,6 +67,7 @@ df4 <- tibble(yob = c(2003:2018), counts = c(rep (1, 14), 6, 1))
 # Waffle Chart
 # ---------------------------------
 
+# Main waffle chart
 family.plot <- waffle(myData, 
                       rows = 5, 
                       legend_pos = "bottom", 
@@ -76,7 +77,19 @@ family.plot <- waffle(myData,
                       use_glyph = "child", 
                       glyph_size = 10)
 
+# Titles for boys and girls waffle chart
+n.girl <- ggchild.girl %>% 
+  summarise(sum = sum(value)) %>% 
+  as.integer()
 
+n.boy <- ggchild.boy %>% 
+  summarise(sum = sum(value)) %>% 
+  as.integer()
+
+t.girl <- str_c("Girls =", n.girl, sep = " ")
+t.boy  <- str_c("Boys =", n.boy, sep = " ")
+
+# Boys waffle chart
 boy.plot <- waffle(myData.boy,
                    rows = 5,
                    legend_pos = "",
@@ -85,9 +98,9 @@ boy.plot <- waffle(myData.boy,
                    size = 0.01,
                    use_glyph = "male",
                    glyph_size = 8,
-                   title = "Boys = 28")
+                   title = t.boy)
 
-
+# Girls waffle chart
 girl.plot <- waffle(myData.girl,
                     rows = 5,
                     legend_pos = "",
@@ -95,7 +108,7 @@ girl.plot <- waffle(myData.girl,
                     size = 0.01,
                     use_glyph = "female", 
                     glyph_size = 8,
-                    title = "Girls = 26")
+                    title = t.girl)
 
 
 # ---------------------------------
@@ -156,8 +169,7 @@ family.table <- gtable_add_grob(family.table,
                                   x1 = unit(1,"npc"),
                                   y1 = unit(0,"npc"),
                                   gp = gpar(lwd = 2.0)),
-                                t = 1, b = 1, l = 1, r = 4
-)
+                                t = 1, b = 1, l = 1, r = 4)
 
 
 # ---------------------------------
